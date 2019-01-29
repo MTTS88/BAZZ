@@ -1,4 +1,4 @@
 exports.TOKEN = "";
 exports.PREFIX = "!";
-exports.GOOGLE_API_KEY = "";
+exports.GOOGLE_API_KEY = "AIzaSyCcOHGZ5WMd162u1ptFcTn45WXn2U39loM";
 
