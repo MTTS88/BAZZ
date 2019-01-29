@@ -1,0 +1,30 @@
+{
+  "name": "bazz",
+  "version": "1.0.0",
+  "description": "BAZZ bot made by MTTS",
+  "main": "BAZZ.js",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "opusscript": "^0.0.6",
+    "simple-youtube-api": "^5.1.1",
+    "ytdl-core": "^0.29.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MTTS88/BAZZ.git"
+  },
+  "keywords": [
+    "music",
+    "bot"
+  ],
+  "author": "MTTS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MTTS88/BAZZ/issues"
+  },
+  "homepage": "https://github.com/MTTS88/BAZZ#readme"
+}
