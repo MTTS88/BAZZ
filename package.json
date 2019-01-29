@@ -5,6 +5,7 @@
   "main": "BAZZ.js",
   "dependencies": {
     "discord.js": "^11.4.2",
+    "ffmpeg": "0.0.4",
     "opusscript": "^0.0.6",
     "simple-youtube-api": "^5.1.1",
     "ytdl-core": "^0.29.1"
