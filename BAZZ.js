@@ -1,7 +1,7 @@
 const { Client, Util } = require("discord.js");
 const YouTube = require('simple-youtube-api');
 const ytdl = require('ytdl-core');
-const GOOGLE_API_KEY = "AIzaSyCcOHGZ5WMd162u1ptFcTn45WXn2U39loM";
+const {GOOGLE_API_KEY} = require("./config");
 const PREFIX = "-";
 const client = new Client( { disableEveryone: true});
 const youtube = new YouTube(GOOGLE_API_KEY);
@@ -35,73 +35,52 @@ client.on('message', async msg =>{
         if(!permissions.has('SPEAK')){
             return msg.channel.send('I cannot speak in this voice channel. Make sure I have the proper permissions!');
         }
-        try{
-            var video = await youtube.getVideo(url);
-        }catch(error){
+        if(url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)){
+            const playlist = await youtube.getPlaylist(url);
+            const videos = await playlist.getVideos();
+            for (const video of Object.values(videos)){
+                const video2 = await youtube.getVideoByID(video.id); //eslint-disable-line-no-await-in-loop
+                await handleVideo(video2, msg, voiceChannel, true); //eslint-disable-line-no-await-in-loop
+            }
+            return msg.channel.send(`Playlist: **${playlist.title}** has been added to the queue!`);
+        } else{
+
             try{
-                var videos = await youtube.searchVideos(searchString, 10);
-                let index = 0;
-                msg.channel.send(`
- __**Song selection:**__
-                
+                var video = await youtube.getVideo(url);
+            }catch(error){
+                try{
+                    var videos = await youtube.searchVideos(searchString, 10);
+                    let index = 0;
+                    msg.channel.send(`
+__**Song selection:**__
+                    
 ${videos.map(video2 => `**${++index}-** ${video2.title}`).join('\n')}
-
+    
 Please provide a value to select one of the search results (1-10).
-                `);
-                
-                try {
-                    var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
-                        maxMatches: 1,
-                        time: 10000,
-                        errors: ['time']
-                    });
-                } catch (err) {
+                    `);
+                    
+                    try {
+                        var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
+                            maxMatches: 1,
+                            time: 10000,
+                            errors: ['time']
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        return msg.channel.send('No or invalid value entered, canceling video selection..');
+                    }
+                    const videoIndex = parseInt(response.first().content);
+                    var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
+                } catch(err){
                     console.error(err);
-                    return msg.channel.send('No or invalid value entered, canceling video selection..');
+                    return msg.channel.send('Video not found.');
                 }
-                const videoIndex = parseInt(response.first().content);
-                var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
-            } catch(err){
-                console.error(err);
-                return msg.channel.send('Video not found.');
-            }
-        }
-        console.log(video);
-        const song = {
-            id: video.id,
-            title: Util.escapeMarkdown(video.title),
-            url: `https://www.youtube.com/watch?v=${video.id}`
-        };
-        if(!serverQueue){
-            const queueConstruct = {
-                textChannel: msg.channel,
-                voiceChannel: voiceChannel,
-                connection: null,
-                songs: [],
-                volume: 5,
-                playing: true
-            };
-            queue.set(msg.guild.id, queueConstruct);
-            
-            queueConstruct.songs.push(song);
-
-            try {
-                var connection = await voiceChannel.join();
-                queueConstruct.connection = connection;
-                play(msg.guild, queueConstruct.songs[0]);
-            } catch(error){
-                console.error(`I could not join the voice channel: ${error}`);
-                queue.delete(msg.guild.id);
-                return msg.channel.send('I could not join the voice channel.');
             }
 
-        } else {
-            serverQueue.songs.push(song);
-            console.log(serverQueue.songs);
-            return msg.channel.send(`**${song.title}** has been added to the queue!`);
-        }
+            return handleVideo(video, msg, voiceChannel);
 
-        return undefined;
+        }
+        
         
     } else if(msg.content.startsWith(`${PREFIX}skip`)){
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
@@ -144,7 +123,7 @@ Please provide a value to select one of the search results (1-10).
         if(!args[1]) return msg.channel.send(`The current volume is: **${serverQueue.volume}**`);
         serverQueue.volume = args[1];
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
-        return msg.channel.send(`${msg.author} changed the volume to **${args[1]}**`);
+        return msg.channel.send(`You changed the volume to **${args[1]}**`);
     } else if(msg.content.startsWith(`${PREFIX}queue`)){
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`
@@ -178,5 +157,47 @@ function play(guild, song){
 
     serverQueue.textChannel.send(`Start playing: **${song.title}**`);
 }
+
+async function handleVideo(video, msg, voiceChannel, playlist = false){
+    const serverQueue = queue.get(msg.guild.id);
+    console.log(video);
+        const song = {
+            id: video.id,
+            title: Util.escapeMarkdown(video.title),
+            url: `https://www.youtube.com/watch?v=${video.id}`
+        };
+        if(!serverQueue){
+            const queueConstruct = {
+                textChannel: msg.channel,
+                voiceChannel: voiceChannel,
+                connection: null,
+                songs: [],
+                volume: 5,
+                playing: true
+            };
+            queue.set(msg.guild.id, queueConstruct);
+            
+            queueConstruct.songs.push(song);
+
+            try {
+                var connection = await voiceChannel.join();
+                queueConstruct.connection = connection;
+                play(msg.guild, queueConstruct.songs[0]);
+            } catch(error){
+                console.error(`I could not join the voice channel: ${error}`);
+                queue.delete(msg.guild.id);
+                return msg.channel.send('I could not join the voice channel.');
+            }
+
+        } else {
+            serverQueue.songs.push(song);
+            console.log(serverQueue.songs);
+            if(playlist) return undefined;
+            else return msg.channel.send(`**${song.title}** has been added to the queue!`);
+        }
+        return undefined;
+}
+
+
 
 client.login(process.env.BOT_TOKEN);
