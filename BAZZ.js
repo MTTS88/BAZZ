@@ -87,18 +87,21 @@ Please provide a value to select one of the search results (1-10).
         
         
     } else if(msg.content.startsWith(`${PREFIX}skip`)){
+        if(args[1]) return undefined;
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(!serverQueue) return msg.channel.send('There is nothing playing that I could skip for you.');
         serverQueue.connection.dispatcher.end();
         return undefined;
 
     } else if(msg.content.startsWith(`${PREFIX}stop`)){
+        if(args[1]) return undefined;
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(!serverQueue) return msg.channel.send('There is nothing playing that I could stop for you.');
         serverQueue.songs = [];
         serverQueue.connection.dispatcher.end();
         return msg.channel.send('Leaving the voice channel..');
     } else if(msg.content.startsWith(`${PREFIX}pause`)){
+        if(args[1]) return undefined;
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(serverQueue && !serverQueue.playing) return msg.channel.send('Music is already paused!');
         if(serverQueue && serverQueue.playing){
@@ -109,6 +112,7 @@ Please provide a value to select one of the search results (1-10).
         return msg.channel.send('There is nothing playing at the moment.');
         
     } else if(msg.content.startsWith(`${PREFIX}resume`)){
+        if(args[1]) return undefined;
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(serverQueue && serverQueue.playing) return msg.channel.send('Music is already playing!');
         if(serverQueue && !serverQueue.playing){
@@ -119,6 +123,7 @@ Please provide a value to select one of the search results (1-10).
         return msg.channel.send('There is nothing playing at the moment.');
         
     } else if(msg.content.startsWith(`${PREFIX}np`)){
+        if(args[1]) return undefined;
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`Now playing: **${serverQueue.songs[0].title}**`);
     } else if(msg.content.startsWith(`${PREFIX}volume`)){
@@ -129,6 +134,7 @@ Please provide a value to select one of the search results (1-10).
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
         return msg.channel.send(`You changed the volume to **${args[1]}**`);
     } else if(msg.content.startsWith(`${PREFIX}queue`)){
+        if(args[1]) return undefined;
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`
 __**Song queue:**__
@@ -137,7 +143,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 **Now playing:** ${serverQueue.songs[0].title}
         `);
     } else if (msg.content.startsWith(`${PREFIX}help`)){
-        
+        if(args[1]) return undefined;
         const embed = new Discord.RichEmbed()
             .setColor(0x0000ff);
 
