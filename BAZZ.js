@@ -136,7 +136,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 **Now playing:** ${serverQueue.songs[0].title}
         `);
     } else if (msg.content.startsWith(`${PREFIX}help`)){
-        const embed = new Discord.RichEmbed()
+        const embed = new Client.RichEmbed()
             .setColor(0x0000ff)
 
         let commandsFound = 0;
