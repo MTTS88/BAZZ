@@ -3,62 +3,62 @@
         "name":"Help",
         "group": "User",
         "desc": "Displays a list of commands",
-        "usage": "help [group OR command]"
+        "usage": "-help [group OR command]"
     },
 
     "Play":{
         "name":"Play",
         "group": "User",
         "desc": "Plays the selected song OR url",
-        "usage": "play [title OR url]"
+        "usage": "-play [title OR url]"
     },
     
     "Pause":{
         "name":"Pause",
         "group": "User",
         "desc": "Pauses the music",
-        "usage": "pause"
+        "usage": "-pause"
     },
 
     "Resume":{
         "name":"Resume",
         "group": "User",
         "desc": "Resumes the music",
-        "usage": "resume"
+        "usage": "-resume"
     },
 
     "Stop":{
         "name":"Stop",
         "group": "User",
         "desc": "Stops the music and BAZZ will leave the channel",
-        "usage": "stop"
+        "usage": "-stop"
     },
 
     "Skip":{
         "name":"Skip",
         "group": "User",
         "desc": "Skips to the next song. If there is no other song in the queue, BAZZ will leave the channel",
-        "usage": "skip"
+        "usage": "-skip"
     },
 
     "Queue":{
         "name":"Queue",
         "group": "User",
         "desc": "Displays the queue",
-        "usage": "queue"
+        "usage": "-queue"
     },
 
     "Volume":{
         "name":"Volume",
         "group": "User",
         "desc": "Changes the current volume to the value entered. If there is no value entered, BAZZ will display the current volume",
-        "usage": "volume [value]"
+        "usage": "-volume [value]"
     },
 
     "Np":{
         "name":"Np",
         "group": "User",
         "desc": "Displays the song playing",
-        "usage": "np"
+        "usage": "-np"
     }
 }
