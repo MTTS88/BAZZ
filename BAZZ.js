@@ -137,7 +137,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
         `);
     } else if (msg.content.startsWith(`${PREFIX}help`)){
         const embed = new Client.RichEmbed()
-            .setColor(0x0000ff)
+            .setColor(0x0000ff);
 
         let commandsFound = 0;
 
@@ -149,7 +149,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
         embed.setFooter(`Currently showing user commands.`);
         embed.setDescription(`**${commandsFound} commands found**`);
         msg.author.send({embed});
-        return msg.channel.send({embed: {
+        msg.channel.send({embed: {
             color: 0x00ff00,
             description: `**Check your DM's ${msg.author}!**`
 
