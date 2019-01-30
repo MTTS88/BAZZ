@@ -8,7 +8,7 @@
     "ffmpeg": "0.0.4",
     "ffmpeg-binaries": "^4.0.0",
     "fs": "0.0.1-security",
-    "opusscript": "^0.0.6",
+    "opusscript": "0.0.6",
     "simple-youtube-api": "^5.1.1",
     "ytdl-core": "^0.29.1"
   },
