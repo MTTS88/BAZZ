@@ -167,7 +167,7 @@ function play(guild, song){
     }
     console.log(serverQueue.songs);
 
-    const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+    const dispatcher = serverQueue.connection.playStream(ytdl(song.url, {filter: "audioonly", quality: "highestaudio", highWaterMark: 1<<25}), {highWaterMark: 1})
         .on('end', () => {
             console.log('Song ended!');
             serverQueue.songs.shift();
