@@ -150,7 +150,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 
         embed.setFooter(`Currently showing user commands.`);
         embed.setDescription(`**${commandsFound} commands found**`);
-        msg.author.sendEmbed(embed);
+        msg.author.send({embed});
         msg.channel.send({embed: {
             color: 0x00ff00,
             description: `**Check your DM's ${msg.author}!**`
