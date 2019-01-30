@@ -12,10 +12,8 @@ client.on('warn', console.warn);
 
 client.on('error', console.error);
 
-client.on('ready', () => {
-    console.log('Ready!');
-    bot.user.setActivity('BAZZ');
-});
+client.on('ready', () => console.log('Ready!'));
+
 
 client.on('disconnect', () => console.log('I just disconnected, making sure you know, I will reconnect now...'));
 
