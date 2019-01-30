@@ -134,7 +134,6 @@ Please provide a value to select one of the search results (1-10).
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
         return msg.channel.send(`You changed the volume to **${args[1]}**`);
     } else if(msg.content.startsWith(`${PREFIX}queue`)){
-        if(args[1]) return undefined;
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`
 __**Song queue:**__
