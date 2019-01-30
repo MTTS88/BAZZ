@@ -1,8 +1,9 @@
 const { Client, Util } = require("discord.js");
 const YouTube = require('simple-youtube-api');
 const ytdl = require('ytdl-core');
-const {GOOGLE_API_KEY} = require("./config");
-const PREFIX = "-";
+const {GOOGLE_API_KEY, PREFIX} = require("./config");
+const fs = require('fs');
+const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf8'));
 const client = new Client( { disableEveryone: true});
 const youtube = new YouTube(GOOGLE_API_KEY);
 const queue = new Map();
@@ -11,21 +12,25 @@ client.on('warn', console.warn);
 
 client.on('error', console.error);
 
-client.on('ready', () => console.log('Ready!'));
+client.on('ready', () => {
+    console.log('Ready!');
+    bot.user.setActivity('BAZZ');
+});
 
 client.on('disconnect', () => console.log('I just disconnected, making sure you know, I will reconnect now...'));
 
 client.on('reconnecting', () => console.log('I am reconnecting now!'));
 
 client.on('message', async msg =>{
+    var __msg__ = msg.content.toLowerCase();
     if(msg.author.bot) return undefined;
-    if(!msg.content.startsWith(PREFIX)) return undefined;
-    const args = msg.content.split(' ');
+    if(!__msg__.startsWith(PREFIX)) return undefined;
+    const args = __msg__.split(' ');
     const searchString = args.slice(1).join(' ');
     const url = args[1] ? args[1].replace(/<(.+)>/g, '$1') : '';
     const serverQueue = queue.get(msg.guild.id);
 
-    if(msg.content.startsWith(`${PREFIX}play`)){
+    if(__msg__.startsWith(`${PREFIX}play`)){
         const voiceChannel = msg.member.voiceChannel;
         if(!voiceChannel) return msg.channel.send('I\'m sorry but you need to be in a voice channel to play music!');
         const permissions = voiceChannel.permissionsFor(msg.client.user);
@@ -82,19 +87,19 @@ Please provide a value to select one of the search results (1-10).
         }
         
         
-    } else if(msg.content.startsWith(`${PREFIX}skip`)){
+    } else if(__msg__.startsWith(`${PREFIX}skip`)){
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(!serverQueue) return msg.channel.send('There is nothing playing that I could skip for you.');
         serverQueue.connection.dispatcher.end();
         return undefined;
 
-    } else if(msg.content.startsWith(`${PREFIX}stop`)){
+    } else if(__msg__.startsWith(`${PREFIX}stop`)){
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(!serverQueue) return msg.channel.send('There is nothing playing that I could stop for you.');
         serverQueue.songs = [];
         serverQueue.connection.dispatcher.end();
         return msg.channel.send('Leaving the voice channel..');
-    } else if(msg.content.startsWith(`${PREFIX}pause`)){
+    } else if(__msg__.startsWith(`${PREFIX}pause`)){
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(serverQueue && !serverQueue.playing) return msg.channel.send('Music is already paused!');
         if(serverQueue && serverQueue.playing){
@@ -104,7 +109,7 @@ Please provide a value to select one of the search results (1-10).
         } 
         return msg.channel.send('There is nothing playing at the moment.');
         
-    } else if(msg.content.startsWith(`${PREFIX}resume`)){
+    } else if(__msg__.startsWith(`${PREFIX}resume`)){
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(serverQueue && serverQueue.playing) return msg.channel.send('Music is already playing!');
         if(serverQueue && !serverQueue.playing){
@@ -114,17 +119,17 @@ Please provide a value to select one of the search results (1-10).
         } 
         return msg.channel.send('There is nothing playing at the moment.');
         
-    } else if(msg.content.startsWith(`${PREFIX}np`)){
+    } else if(__msg__.startsWith(`${PREFIX}np`)){
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`Now playing: **${serverQueue.songs[0].title}**`);
-    } else if(msg.content.startsWith(`${PREFIX}volume`)){
+    } else if(__msg__.startsWith(`${PREFIX}volume`)){
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         if(!msg.member.voiceChannel) return msg.channel.send('You are not in a voice channel!');
         if(!args[1]) return msg.channel.send(`The current volume is: **${serverQueue.volume}**`);
         serverQueue.volume = args[1];
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
         return msg.channel.send(`You changed the volume to **${args[1]}**`);
-    } else if(msg.content.startsWith(`${PREFIX}queue`)){
+    } else if(__msg__.startsWith(`${PREFIX}queue`)){
         if(!serverQueue) return msg.channel.send('There is nothing playing at the moment.');
         return msg.channel.send(`
 __**Song queue:**__
@@ -132,7 +137,27 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 
 **Now playing:** ${serverQueue.songs[0].title}
         `);
+    } else if (__msg__.startsWith(`${PREFIX}help`)){
+        const embed = new Discord.RichEmbed()
+            .setColor(0x0000ff)
+
+        let commandsFound = 0;
+
+        for(var cmd in commands){
+            commandsFound++;
+            embed.addField(`${commands[cmd].name}`, `**Description**: ${commands[cmd].desc}\n**Usage:** ${commands[cmd].usage}`);
+        }
+
+        embed.setFooter(`Currently showing user commands.`);
+        embed.setDescription(`**${commandsFound} commands found**`);
+        msg.author.send({embed});
+        return msg.channel.send({embed: {
+            color: 0x00ff00,
+            description: `**Check your DM's ${msg.author}!**`
+
+        }});
     } 
+     
     return undefined;
 });
 
@@ -197,6 +222,7 @@ async function handleVideo(video, msg, voiceChannel, playlist = false){
         }
         return undefined;
 }
+
 
 
 
