@@ -1,10 +1,10 @@
-const { Client, Util } = require("discord.js");
+const { Discord, Util } = require("discord.js");
 const YouTube = require('simple-youtube-api');
 const ytdl = require('ytdl-core');
 const {GOOGLE_API_KEY, PREFIX} = require("./config");
 const fs = require('fs');
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf8'));
-const client = new Client( { disableEveryone: true});
+const client = new Discord.Client();
 const youtube = new YouTube(GOOGLE_API_KEY);
 const queue = new Map();
 
@@ -137,7 +137,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
         `);
     } else if (msg.content.startsWith(`${PREFIX}help`)){
         
-        const embed = new Client.RichEmbed()
+        const embed = new Discord.RichEmbed()
             .setColor(0x0000ff);
 
         let commandsFound = 0;
@@ -155,7 +155,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
             description: `**Check your DM's ${msg.author}!**`
 
         }});
-        return;
+        return undefined;
     } 
      
     return undefined;
