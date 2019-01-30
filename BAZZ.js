@@ -136,6 +136,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 **Now playing:** ${serverQueue.songs[0].title}
         `);
     } else if (msg.content.startsWith(`${PREFIX}help`)){
+        
         const embed = new Client.RichEmbed()
             .setColor(0x0000ff);
 
@@ -148,12 +149,13 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
 
         embed.setFooter(`Currently showing user commands.`);
         embed.setDescription(`**${commandsFound} commands found**`);
-        msg.author.send({embed});
+        msg.author.sendEmbed(embed);
         msg.channel.send({embed: {
             color: 0x00ff00,
             description: `**Check your DM's ${msg.author}!**`
 
         }});
+        return;
     } 
      
     return undefined;
