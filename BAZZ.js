@@ -159,7 +159,7 @@ ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
         return undefined;
     } 
      
-    return undefined;
+    return msg.channel.send('Invalid command. Type -help to receive a list with commands.');
 });
 
 function play(guild, song){
